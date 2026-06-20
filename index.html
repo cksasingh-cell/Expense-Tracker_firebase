@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Expense Tracker v15.33 • Firebase</title>
+    <title>Expense Tracker v15.34 • Firebase</title>
     
     <!-- PWA Configuration -->
     <link rel="manifest" href="data:application/manifest+json,{
@@ -1213,7 +1213,7 @@
             top: -22px;
             height: 0;
             overflow: hidden;
-            border-radius: 0;
+            border-radius: 0 0 16px 16px;
             z-index: 999;
             pointer-events: none;
             transition: height 1.8s cubic-bezier(0.16, 0.7, 0.25, 1);
@@ -1345,7 +1345,7 @@
         .inline-form-btns .btn-cancel:hover { background: #e5e5e5; }
 
         .inline-form-btns .btn-save {
-            flex: 2;
+            flex: 1;
             padding: 9px;
             background: linear-gradient(135deg, #dc5070, #b02050);
             color: #fff;
@@ -1584,7 +1584,7 @@
                 <div style="font-size: 9px; color: rgba(255, 255, 255, 0.5); margin-bottom: 8px;">
                     <span id="sync-status">Synced as Chandan</span>
                 </div>
-                Expense Tracker v15.33 • Firebase
+                Expense Tracker v15.34 • Firebase
                 <div style="margin-top: 8px; font-size: 12px;">
                     <a href="#" onclick="downloadExpenseData(); return false;" style="color: #3b82f6; text-decoration: none; font-weight: 600; cursor: pointer;">
                         Download data in Excel
@@ -2727,6 +2727,15 @@
             const dd = String(today.getDate()).padStart(2, '0');
             document.getElementById('if-date').value = `${yyyy}-${mm}-${dd}`;
 
+            // Pre-select Type based on the currently active tab
+            const typeSelect = document.getElementById('if-expense-type');
+            if (currentTab === 'monthly' || currentTab === 'travel' || currentTab === 'personal') {
+                typeSelect.value = currentTab;
+            } else {
+                typeSelect.value = 'monthly'; // settlement tab has no matching type, default to Expense
+            }
+            ifUpdateCategories();
+
             // Measure actual card height so mask grows to the exact size
             const card = document.querySelector('.inline-form');
             const h = card.scrollHeight;
@@ -2736,6 +2745,10 @@
             mask.classList.remove('closing');
             mask.classList.add('open');
             document.getElementById('card-connector').classList.add('visible');
+
+            // Lock page scroll so the card stays anchored to the button
+            document.body.style.overflow = 'hidden';
+            document.body.style.touchAction = 'none';
 
             // Blur the content behind it (not the header/tabs)
             document.getElementById('main-content-blur').classList.add('blurred');
@@ -2748,6 +2761,10 @@
             mask.classList.remove('open');
             mask.classList.add('closing');
             document.getElementById('card-connector').classList.remove('visible');
+
+            // Unlock page scroll
+            document.body.style.overflow = '';
+            document.body.style.touchAction = '';
 
             // Unblur only AFTER the card has fully retracted
             setTimeout(() => {
